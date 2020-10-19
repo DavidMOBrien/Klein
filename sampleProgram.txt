@@ -1,0 +1,3 @@
+function main() : boolean
+  print(4+3)
+  1
