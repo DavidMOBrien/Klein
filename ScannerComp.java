@@ -64,91 +64,95 @@ public class ScannerComp {
 
             String line = content.get(i);
 
-            for (int j = 0; j < line.length(); j++){
-                char currentChar = line.charAt(j);
+            if (! ( (line.contains("(*")) || (line.contains("*)")) ) ) {
+
+                for (int j = 0; j < line.length(); j++){
+                    char currentChar = line.charAt(j);
                     
-                switch (cs) {
+                    switch (cs) {
 
-                    case SEARCHING:
+                        case SEARCHING:
 
-                        if ("1234567890".indexOf(currentChar) != -1) {
+                            if ("1234567890".indexOf(currentChar) != -1) {
 
-                            acc += currentChar;
-                            if (j == line.length() -1) {
-                                results.add(new TokenComp( "INTEGER", acc));
-                                acc = "";
-                            }
-                            else {
-                                cs = CurrentState.INTEGER;
-                            }
+                                acc += currentChar;
+                                if (j == line.length() -1) {
+                                    results.add(new TokenComp( "INTEGER", acc, true));
+                                    acc = "";
+                                }
+                                else {
+                                    cs = CurrentState.INTEGER;
+                                }
                             
-                        }
-
-                        if ("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz".indexOf(currentChar) != -1) {
-
-                            acc += currentChar;
-                            if (j == line.length() -1) {
-                                results.add(new TokenComp( "IDENTIFIER", acc));
-                                acc = "";
                             }
-                            else {
-                                cs = CurrentState.STRING;
-                            }
+
+                            if ("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz".indexOf(currentChar) != -1) {
+
+                                acc += currentChar;
+                                if (j == line.length() -1) {
+                                    results.add(new TokenComp( "IDENTIFIER", acc, true));
+                                    acc = "";
+                                }
+                                else {
+                                    cs = CurrentState.STRING;
+                                }
                             
 
-                        }
-
-                        findPunctuation(currentChar, line, j);
-
-                        break;
-                    
-                    case INTEGER:
-
-                        if ("1234567890".indexOf(currentChar) != -1) {
-                            acc += currentChar;
-                        }
-
-                        if ((" ()+<'-=:/'*".indexOf(currentChar) != -1) || (j == line.length() -1)) {
-                            cs = CurrentState.SEARCHING;
-                            results.add(new TokenComp( "INTEGER", acc));
-                            acc = "";
+                            }
 
                             findPunctuation(currentChar, line, j);
 
-                        }
-
-                        break;
+                            break;
                     
-                    case STRING:
+                        case INTEGER:
+
+                            if ("1234567890".indexOf(currentChar) != -1) {
+                                acc += currentChar;
+                            }
+
+                            if ((" ()+<'-=:/'*,".indexOf(currentChar) != -1) || (j == line.length() -1)) {
+                                cs = CurrentState.SEARCHING;
+                                results.add(new TokenComp( "INTEGER", acc, true));
+                                acc = "";
+
+                                findPunctuation(currentChar, line, j);
+
+                            }
+
+                            break;
+                    
+                        case STRING:
                         
-                        if ("1234567890AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz".indexOf(currentChar) != -1) {
-                            acc += currentChar;
-                        }
-
-                        if ((" ()+<'-=:/'*".indexOf(currentChar) != -1) || (j == line.length() -1)) {
-
-                            cs = CurrentState.SEARCHING;
-
-                            if ((acc == "true") || (acc == "false")) {
-                                results.add(new TokenComp("LITERAL", acc));
+                            if ("1234567890AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz".indexOf(currentChar) != -1) {
+                                acc += currentChar;
                             }
 
-                            else if (kw.contains(acc)) {
-                                results.add(new TokenComp("KEYWORD", acc));
-                            }
+                            if ((" (),+<'-=:/'*".indexOf(currentChar) != -1) || (j == line.length() -1)) {
 
-                            else {
-                                results.add(new TokenComp("IDENTIFIER", acc));
-                            }
+                                cs = CurrentState.SEARCHING;
 
-                            acc = "";
+                                if ((acc.equals("true")) || (acc.equals("false"))) {
+                                    results.add(new TokenComp("BOOLEAN", acc, true));
+                                }
+
+                                else if (kw.contains(acc)) {
+                                    results.add(new TokenComp("KEYWORD", acc, true));
+                                }
+
+                                else {
+                                    results.add(new TokenComp("IDENTIFIER", acc, true));
+                                }
+
+                                acc = "";
                             
-                            findPunctuation(currentChar, line, j);
+                                findPunctuation(currentChar, line, j);
 
-                        }
+                            }
 
-                        break;
-
+                            break;
+                    
+                    }
+                    
                 }
 
             }
@@ -157,34 +161,38 @@ public class ScannerComp {
 
     }
 
-    public void getResults() {
+    public void printResults() {
         for (int i = 0; i < results.size(); i++) {
             System.out.println(results.get(i));
         }
     }
 
+    public ArrayList<TokenComp> getResults() {
+        return results;
+    }
+
     public void findPunctuation(char currentChar, String currentLine, int currentIndex) {
 
-        if ("+<'-=:/'".indexOf(currentChar) != -1) {
-            results.add(new TokenComp("PUNCTUATION", String.valueOf(currentChar)));
+        if (",+<'-=:/'".indexOf(currentChar) != -1) {
+            results.add(new TokenComp("PUNCTUATION", String.valueOf(currentChar), true));
         }
 
         if (currentChar == '(' ) {
             if (currentLine.charAt(currentIndex + 1) == '*') {
-                results.add(new TokenComp("PUNCTUATION", "(*"));
+                results.add(new TokenComp("PUNCTUATION", "(*", true));
             }
             else {
-                results.add(new TokenComp("PUNCTUATION", "("));
+                results.add(new TokenComp("PUNCTUATION", "(", true));
             }
         }
 
         if (currentChar == '*') {
             if (currentLine.charAt(currentIndex - 1) != '(') {
                 if (currentLine.charAt(currentIndex + 1) == ')') {
-                    results.add(new TokenComp("PUNCTUATION", "*)"));
+                    results.add(new TokenComp("PUNCTUATION", "*)", true));
                 }
                 else {
-                    results.add(new TokenComp("PUNCTUATION", "*"));
+                    results.add(new TokenComp("PUNCTUATION", "*", true));
                 }
             }
         }
@@ -192,7 +200,7 @@ public class ScannerComp {
         
         if (currentChar == ')' ) {
             if (currentLine.charAt(currentIndex - 1) != '*') {
-                results.add(new TokenComp("PUNCTUATION", ")"));
+                results.add(new TokenComp("PUNCTUATION", ")", true));
             }
         }
 

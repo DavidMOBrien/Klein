@@ -1,3 +1,17 @@
-function main() : boolean
-  print(4+3)
-  1
+function reverse(n : integer) : integer
+  reverseL(n, 0)
+
+function reverseL(n : integer, nR : integer) : integer
+  if n = 0
+     then nR
+     else reverseL(n / 10 , 10 * nR + MOD(n, 10))
+
+(* Hello this is a comment test *)
+
+function isPalindrome(n : integer) : boolean
+  0 = (n - reverse(n))
+
+function main(number : integer): boolean
+  print(number)
+  print(reverse(number))
+  isPalindrome(number)
