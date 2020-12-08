@@ -3,9 +3,9 @@ import java.util.*;
 public class Klein{
     
     public static void main(String[] args){
-        String filename = args[0];
+        //String filename = args[0];
 
-        //String filename = "sampleProgram.txt";
+        String filename = "sampleProgram.txt";
 
         ScannerComp scanner = new ScannerComp();
 

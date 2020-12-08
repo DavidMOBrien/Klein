@@ -60,11 +60,13 @@ public class ScannerComp {
 
     public void scanThru(){
 
+        boolean skipLine = false;
+
         for (int i = 0; i < content.size(); i++ ) {
 
             String line = content.get(i);
 
-            if (! ( (line.contains("(*")) || (line.contains("*)")) ) ) {
+            if (!line.startsWith("(*") && !skipLine) {
 
                 for (int j = 0; j < line.length(); j++){
                     char currentChar = line.charAt(j);
@@ -155,6 +157,13 @@ public class ScannerComp {
                     
                 }
 
+            } else {
+                if (line.endsWith("*)")) {
+                    skipLine = false;
+                } else {
+                    skipLine = true;
+                }
+                
             }
 
         }
@@ -206,7 +215,7 @@ public class ScannerComp {
 
     }
     public static void main(String[] args) {
-        
+        System.out.println("Test");
     }
 
 } //end ScannerComp
