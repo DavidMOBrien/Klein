@@ -168,6 +168,34 @@ public class ScannerComp {
 
         }
 
+        removeComments();
+
+    }
+
+    public void removeComments() {
+        boolean insideComment = false;
+        ArrayList<TokenComp> temp = new ArrayList<TokenComp>();
+
+        for (int i=0; i < results.size(); i++) {
+
+            if (insideComment) {
+
+                if (results.get(i).getValue().equals("*)")) {
+                    insideComment = false;
+                    continue;
+                }
+
+            } else {
+                if (results.get(i).getValue().equals("(*")) {
+                    insideComment = true;
+                }
+                else {
+                    temp.add(results.get(i));
+                }
+            }
+        }
+
+        results = temp;
     }
 
     public void printResults() {
